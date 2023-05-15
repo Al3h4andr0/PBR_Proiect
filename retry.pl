@@ -10,11 +10,10 @@ is_letter(Char) :-
 is_triphthong(V0, V1, V2) :-
     member([V0,V1,V2], [['e','a','i'], ['e','a','u'], ['i','a','i'], ['i','a','u'], ['i','e','i'], ['i','e','u'], ['i','o','u'], ['o','a','i'], ['e','o','a'], ['i','o','a']]).
 
-insert_hyphen(Str) :-
+insert_hyphen(Str, Output, Ignore) :-
     atom_chars(Str, Chars), % Convert the input string to a list of characters
     insert_hyphen(Chars, ResultChars), % Call the helper predicate with the list of characters
-    flatten(ResultChars, Output),
-    format("Output = ~w", [Output]).
+    flatten(ResultChars, Output).
 
 
 insert_hyphen([C0, V0, C1, V1], [C0, V0, C1, V1]) :-
@@ -170,7 +169,7 @@ insert_hyphen([C | Rest], [C | Result]) :-
     insert_hyphen(Rest, Result).
 
 insert_hyphen([], []).
-
+/*
 :- format("Regula 1: \n").
 :- insert_hyphen("casa").
 :- format("\n").
@@ -297,4 +296,4 @@ insert_hyphen([], []).
 :- format("\n").
 :- insert_hyphen("atlet").
 :- format("\n").
-
+*/
