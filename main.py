@@ -177,10 +177,5 @@ button_anagram.grid(row=7, column=0, padx=5, pady=10)
 text_anagram_output = tk.Text(window, height=5, width=30)
 text_anagram_output.grid(row=7, column=1, padx=5, pady=10, sticky="W")
 
-
-# make the window 500x500 pixels
-window.geometry("500x500")
-
-
 # Start the event loop
 window.mainloop()
