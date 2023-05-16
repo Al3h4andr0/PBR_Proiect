@@ -6,15 +6,32 @@ consonant(Char) :-
 
 is_letter(Char) :-
     char_type(Char, alpha).
+	
+is_hiat(V0,V1) :-
+	member([V0,V1], [['a','e'],['a','i'],['o','e'],['i','e']]).
 
 is_triphthong(V0, V1, V2) :-
-    member([V0,V1,V2], [['e','a','i'], ['e','a','u'], ['i','a','i'], ['i','a','u'], ['i','e','i'], ['i','e','u'], ['i','o','u'], ['o','a','i'], ['e','o','a'], ['i','o','a']]).
+    member([V0,V1,V2], [['e','a','i'], ['e','a','u'], ['i','a','i'], ['i','a','u'], ['i','e','i'], ['i','e','u'], ['i','o','u'], ['o','a','i'], ['e','o','a'], ['i','o','a'], ['a','u','a']]).
 
 insert_hyphen(Str, Output, Ignore) :-
     atom_chars(Str, Chars), % Convert the input string to a list of characters
     insert_hyphen(Chars, ResultChars), % Call the helper predicate with the list of characters
     flatten(ResultChars, Output).
 
+insert_hyphen([V1, C1, C2, C3 | Rest], [V1,C1,C2,"-",Result]) :-
+	vowel(V1),
+	consonant(C1),
+	consonant(C2),
+	consonant(C3),
+	member([C1,C2,C3],[['l','p','t'],['m','p','t'],['n','c','t'],['n','c','ț'],['n','c','ş'],['n','d','v'],['r','c','t'], ['r','t','f'], ['s','t','m']]),
+	insert_hyphen([C3 | Rest], Result ).
+
+insert_hyphen([V1, C1, C2, C3 | Rest], [V1,C1,"-",Result]) :-
+	vowel(V1),
+	consonant(C1),
+	consonant(C2),
+	consonant(C3),
+	insert_hyphen([C2,C3 | Rest], Result ).
 
 insert_hyphen([C0, V0, C1, V1], [C0, V0, C1, V1]) :-
     vowel(V0),
@@ -31,6 +48,16 @@ insert_hyphen([V0, C, V1| Rest], [V0, "-", Result]) :-
     vowel(V1),
     consonant(C),
     insert_hyphen([C,V1|Rest], Result).
+
+	
+insert_hyphen([V0, V1, V2| Rest], [V0, "-", Result]) :-
+    vowel(V0),
+    vowel(V1),
+    vowel(V2),
+    insert_hyphen([V1, V2|Rest], Result).
+
+
+
 
 insert_hyphen([V0, C0, C1, V1| Rest], [V0, C0, "-", Result]) :-
     vowel(V0),
@@ -101,6 +128,13 @@ insert_hyphen([C0, C1, V0, V1 | Rest], [C0, C1, V0, "-", V1]) :-
     member(C0, ['b','c','d','f','g','h','p','t','v']),
     member(C1, ['l','r', 'h']).
 
+insert_hyphen([V0, V1, C1| Rest], [V0, "-", Result]) :-
+    vowel(V0),
+    vowel(V1),
+	is_hiat(V0,V1),
+    consonant(C1),
+    insert_hyphen([V1, C1|Rest], Result).
+	
 
 insert_hyphen([C0, C1, V0, C2 | Rest], [C0, C1, V0, C2]) :-
     consonant(C0),
@@ -149,6 +183,14 @@ insert_hyphen([C0, V0, V1 | Rest], [C0, V0, "-", V1]) :-
     vowel(V1),
     length(Rest, 0).
 
+insert_hyphen([C0, V0, V1 | Rest], [C0, V0, "-", V1]) :-
+    consonant(C0),
+    vowel(V0),
+    vowel(V1),
+    length(Rest, 0).
+
+
+
 insert_hyphen([V0, V1, V2, V3| Rest], [V0, "-", Result]) :-
     vowel(V0),
     vowel(V1),
@@ -156,14 +198,18 @@ insert_hyphen([V0, V1, V2, V3| Rest], [V0, "-", Result]) :-
     vowel(V3),
     is_triphthong(V1,V2,V3),
     insert_hyphen([V1, V2, V3|Rest], Result).
+	
+	
 
 insert_hyphen([C0,C1, V | Rest], [C0, "-", Result]) :-
     consonant(C0),
     consonant(C1),
-    \+ member(C0, ['b','c','d','f','g','h','p','t','v']),
+    \+ member(C0, ['b','c','d','f','g','h','p','t','v','s']),
     \+ member(C1, ['l','r']),
     vowel(V),
     insert_hyphen([C1, V|Rest], Result).
+	
+
 
 insert_hyphen([C | Rest], [C | Result]) :-
     insert_hyphen(Rest, Result).
